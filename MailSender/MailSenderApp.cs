@@ -35,13 +35,15 @@ public class MailSenderApp
             }
 
             var response = await _emailService.SendAsync(emailDetails);
-            Console.WriteLine("\nResponse: " + response?.Content);
-
             isSent = response.IsSuccessful;
-            if (isSent)
-            {
-                Console.WriteLine("The message has been sent successfully!\n");
-            }
+            
+            string msg = isSent 
+                ? "The message has been sent successfully!\n"
+                : "The request has been failed\n";
+            Console.WriteLine(msg);
+            
+            //TODO: Parse the response message and print it in the formatted way
+;           Console.WriteLine("\nResponse: " + response.Content);
         }
     }
     EmailDetails AskEmailDetails()
