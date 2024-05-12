@@ -2,8 +2,10 @@ using MailSender;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using TestClient;
+using static ServiceExtensions;
 
 using IHost host = AddServices().Build();
+AddExceptionHandler();
 
 var mailApp = host.Services.GetService<MailSenderApp>();
 await mailApp.RunAsync();
