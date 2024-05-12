@@ -2,33 +2,10 @@ using Moq;
 using RestSharp;
 using TestClient;
 
-namespace EmailSenderTest
+namespace MailSenderTest
 {
-    // Fixture class
-    public class EmailValidatorFixture : IDisposable
+    public class EmailSenderTests
     {
-        public IEmailValidatorService EmailValidator { get; private set; }
-
-        public EmailValidatorFixture()
-        {
-            EmailValidator = new EmailValidatorService();
-        }
-
-        public void Dispose()
-        {
-            // Clean up resources if needed
-            EmailValidator = null;
-        }
-    }
-    public class EmailSenderTests : IClassFixture<EmailValidatorFixture>
-    {
-        private readonly EmailValidatorFixture _emailValidatorFixture;
-
-        public EmailSenderTests(EmailValidatorFixture emailValidatorFixture)
-        {
-            _emailValidatorFixture = emailValidatorFixture;
-        }
-        
         [Theory]
         [MemberData(nameof(MailSuccessfulTestData))]
         public async Task IfEmailIsValid_ShouldBeSent(EmailDetails emailDetails)
@@ -43,10 +20,11 @@ namespace EmailSenderTest
             };
 
             mockMailService.Setup(m => m.SendAsync(emailDetails)).ReturnsAsync(successfulResponse);
-            
+            var emailValidatorService = new EmailValidatorService();
+
             //Act
-            var isSenderEmailValid = _emailValidatorFixture.EmailValidator.ValidateEmail(emailDetails.Sender.Email);
-            var isRecipientEmailValid = _emailValidatorFixture.EmailValidator.ValidateEmail(emailDetails.Recipient.Email);
+            var isSenderEmailValid = emailValidatorService.ValidateEmail(emailDetails.Sender.Email);
+            var isRecipientEmailValid = emailValidatorService.ValidateEmail(emailDetails.Recipient.Email);
             var areEmailAddressesValid = isSenderEmailValid && isRecipientEmailValid;
             
             var isSuccessResponse = false;
@@ -73,10 +51,11 @@ namespace EmailSenderTest
             };
 
             mockMailService.Setup(m => m.SendAsync(emailDetails)).ReturnsAsync(errorResponse);
+            var emailValidatorService = new EmailValidatorService();
             
             //Act
-            var isSenderEmailValid = _emailValidatorFixture.EmailValidator.ValidateEmail(emailDetails.Sender.Email);
-            var isRecipientEmailValid = _emailValidatorFixture.EmailValidator.ValidateEmail(emailDetails.Recipient.Email);
+            var isSenderEmailValid = emailValidatorService.ValidateEmail(emailDetails.Sender.Email);
+            var isRecipientEmailValid = emailValidatorService.ValidateEmail(emailDetails.Recipient.Email);
             var areEmailAddressesValid = isSenderEmailValid && isRecipientEmailValid;
             
             var isSuccessResponse = false;
